@@ -6,3 +6,5 @@ all: $(ALL)
 
 
 
+clean:
+	rm test

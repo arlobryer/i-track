@@ -1,8 +1,6 @@
-#include "cv.h"
-#include "highgui.h"
 #include "math.h"
 #include "detection.hh"
-
+#include "manager.hh"
 
 using namespace cv;
 

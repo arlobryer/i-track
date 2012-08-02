@@ -9,6 +9,12 @@ String face_cascade_name = "bin/haarcascades/haarcascade_frontalface_alt.xml";
 String eyes_cascade_name = "bin/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 String eyes_cascade_name2 = "bin/haarcascades/haarcascade_eye.xml";
 
+class iDetect{
+public:
+  iDetect(){}
+  ~iDetect(){}
+};
+
 void detectFace(Mat f){
   std::vector<Rect> faces;
   Mat frame_gray;
