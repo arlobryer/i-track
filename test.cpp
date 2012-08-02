@@ -25,6 +25,12 @@ Point2d GetCenter(Mat* im){
 
 int main(int, char**)
 {
+  if (!face_cascade.load(face_cascade_name)){
+    std::cout<<"Error loading face_cascade"<<std::endl;
+    return -1;
+  }
+  
+
     VideoCapture cap(0); // open the default camera
     if(!cap.isOpened())  // check if we succeeded
         return -1;
@@ -57,6 +63,8 @@ int main(int, char**)
 		  
 
 	Mat roi(*scaled, Rect(scaled->cols/2 - scaled->cols/(2*zoom), scaled->rows/2 - scaled->rows/(2*zoom), raw->cols, raw->rows));
+	detectFace(*frame);
+
 	moveWindow("video", frame->cols+50, 50);
 
 	imshow("video", *frame);
