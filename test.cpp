@@ -33,7 +33,11 @@ int main(int, char**)
     std::cout<<"Error loading eyes_cascade"<<std::endl;
     return -1;
   }
-  
+  if (!eyes_cascade2.load(eyes_cascade_name2)){
+    std::cout<<"Error loading eyes_cascade2"<<std::endl;
+    return -1;
+  }
+
 
     VideoCapture cap(0); // open the default camera
     if(!cap.isOpened())  // check if we succeeded
@@ -49,7 +53,7 @@ int main(int, char**)
     {
         cap >> *frame; // get a new frame from camera
 	//cvt syntax:(source, destination, conversion_code)
-        cvtColor(*frame, *raw, CV_BGR2GRAY);
+        cvtColor(*frame, *raw, CV_BGR2HSV);
         // GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
         // Canny(edges, edges, 0, 30, 3);
 	double zoom  = 7.;
@@ -65,10 +69,10 @@ int main(int, char**)
 	// thickness, line type, shift
 	rectangle(*frame, pt1, pt2, cvScalar(0, 0, 255, 0), 1, 8, 0);
 		  
-
 	Mat roi(*scaled, Rect(scaled->cols/2 - scaled->cols/(2*zoom), scaled->rows/2 - scaled->rows/(2*zoom), raw->cols, raw->rows));
 	detectFace(*frame);
 	detectEyes(*frame);
+	detectZoomEyes(roi);
 	moveWindow("video", frame->cols+50, 50);
 	imshow("video", *frame);
 	imshow("threshold", *raw);
