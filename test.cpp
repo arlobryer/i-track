@@ -38,8 +38,10 @@ int main(int, char**)
 
 
     VideoCapture cap(0); // open the default camera
-    if(!cap.isOpened())  // check if we succeeded
-        return -1;
+    if(!cap.isOpened()){  // check if we succeeded
+      std::cout<<"Failed to open camera! Bailing."<<std::endl;
+      return -1;
+    }
 
     Mat *scaled = new Mat();    
     Mat *raw = new Mat(); 
