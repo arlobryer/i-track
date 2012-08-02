@@ -6,6 +6,7 @@ using namespace cv;
 //http://docs.opencv.org/doc/tutorials/objdetect/cascade_classifier/cascade_classifier.html
 CascadeClassifier face_cascade, eyes_cascade;
 String face_cascade_name = "bin/haarcascades/haarcascade_frontalface_alt.xml";
+String eyes_cascade_name = "bin/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 
 void detectFace(Mat f){
   std::vector<Rect> faces;
@@ -24,15 +25,25 @@ void detectFace(Mat f){
 }
 
 
-// bool findEyes(IplImage* img){
-//   CvSeq *faces = cvHaarDetectObject(
-// 				    img, 
-// 				    cascade_f,
-// 				    storage,
-// 				    1.1, 3, 0,
-// 				    cvSize(40, 40)
-// 				    );
-//   if (faces->total == 0){
-//     return true;
-//   }
-// }
+void detectEyes(Mat f){
+  std::vector<Rect> faces;
+  Mat frame_gray;
+  cvtColor( f, frame_gray, CV_BGR2GRAY );
+  equalizeHist( frame_gray, frame_gray );
+  face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30) );
+
+  for( int i = 0; i < faces.size(); i++ )
+  {
+    Mat faceROI = frame_gray( faces[i] );
+    std::vector<Rect> eyes;
+    //-- In each face, detect eyes
+    eyes_cascade.detectMultiScale( faceROI, eyes, 1.1, 2, 0 |CV_HAAR_SCALE_IMAGE, Size(30, 30) );
+
+    for( int j = 0; j < eyes.size(); j++ )
+     {
+       Point center( faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5 );
+       int radius = cvRound( (eyes[j].width + eyes[j].height)*0.25 );
+       circle( f, center, radius, Scalar(0, 0, 255 ), 1, 8, 0 );
+     }
+  }
+}

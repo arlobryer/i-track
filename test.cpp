@@ -29,6 +29,10 @@ int main(int, char**)
     std::cout<<"Error loading face_cascade"<<std::endl;
     return -1;
   }
+  if (!eyes_cascade.load(eyes_cascade_name)){
+    std::cout<<"Error loading eyes_cascade"<<std::endl;
+    return -1;
+  }
   
 
     VideoCapture cap(0); // open the default camera
@@ -64,9 +68,8 @@ int main(int, char**)
 
 	Mat roi(*scaled, Rect(scaled->cols/2 - scaled->cols/(2*zoom), scaled->rows/2 - scaled->rows/(2*zoom), raw->cols, raw->rows));
 	detectFace(*frame);
-
+	detectEyes(*frame);
 	moveWindow("video", frame->cols+50, 50);
-
 	imshow("video", *frame);
 	imshow("threshold", *raw);
 	imshow("zoomed", roi);
