@@ -1,6 +1,8 @@
 #include "cv.h"
 #include "highgui.h"
 #include "math.h"
+#include "detection.hh"
+
 
 using namespace cv;
 
@@ -18,6 +20,7 @@ Point2d GetCenter(Mat* im){
   return center;
 }
   
+
 
 
 int main(int, char**)
