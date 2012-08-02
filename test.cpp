@@ -1,5 +1,6 @@
 #include "cv.h"
 #include "highgui.h"
+#include "math.h"
 
 using namespace cv;
 
@@ -12,6 +13,12 @@ IplImage* GetThresholdImage(IplImage* img){
   return imgThreshed;
 }
 
+Point2d GetCenter(Mat* im){
+  Point2d center(im->cols/2, im->rows/2);
+  return center;
+}
+  
+
 
 int main(int, char**)
 {
@@ -19,25 +26,38 @@ int main(int, char**)
     if(!cap.isOpened())  // check if we succeeded
         return -1;
 
-    Mat edges, scale_edges;
+    Mat *scaled = new Mat();    
+    Mat *raw = new Mat(); 
+    Mat *frame = new Mat();
     namedWindow("video", 1);
     namedWindow("threshold", 1);
-    namedWindow("zoomed", 1);
+    // namedWindow("zoomed", 1);
     while(true)
     {
-      Mat frame;
-        cap >> frame; // get a new frame from camera
+        cap >> *frame; // get a new frame from camera
 	//cvt syntax:(source, destination, conversion_code)
-        cvtColor(frame, edges, CV_BGR2HLS);
+        cvtColor(*frame, *raw, CV_BGR2GRAY);
         // GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
         // Canny(edges, edges, 0, 30, 3);
-	resize(edges, scale_edges, scale_edges.size(), 3., 3., INTER_AREA);
-	Mat roi = scale_edges(cvRect(50, 50, 360, 360));
-	moveWindow("video", frame.cols+50, 50);
-	moveWindow("zoomed", 50, frame.rows+50);
+	double zoom  = 7.;
+	resize(*raw, *scaled, scaled->size(), zoom, zoom);
+	Point2d raw_cent = GetCenter(raw);
+	Point2d scale_cent = GetCenter(scaled);
+	Point2d pt1(raw->cols/2 - raw->cols/(2*zoom), raw->rows/2 - raw->rows/(2*zoom));
+	Point2d pt2(pt1.x + raw->cols/zoom, pt1.y + raw->rows/zoom);
+	circle(*frame,                       /* the dest image */
+		 raw_cent, 1,      /* center point and radius */
+		 cvScalar(0, 0, 255, 0),    /* the color; red */
+		 -1, 8, 0);
+	// thickness, line type, shift
+	rectangle(*frame, pt1, pt2, cvScalar(0, 0, 255, 0), 1, 8, 0);
+		  
 
-	imshow("video", frame);
-	imshow("threshold", edges);
+	Mat roi(*scaled, Rect(scaled->cols/2 - scaled->cols/(2*zoom), scaled->rows/2 - scaled->rows/(2*zoom), raw->cols, raw->rows));
+	moveWindow("video", frame->cols+50, 50);
+
+	imshow("video", *frame);
+	imshow("threshold", *raw);
 	imshow("zoomed", roi);
         if(waitKey(30) >= 0) break;
     }
